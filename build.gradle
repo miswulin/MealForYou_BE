@@ -24,6 +24,10 @@ dependencies {
     // 전화번호 정규화를 위한 라이브러리
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.50'
 
+    // 이메일 인증을 위한 의존성
+    implementation 'org.springframework.boot:spring-boot-starter-mail'       // JavaMailSender (SMTP)
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis' // Redis (인증코드/플래그 저장)
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
