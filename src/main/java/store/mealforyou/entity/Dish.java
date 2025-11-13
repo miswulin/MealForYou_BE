@@ -18,6 +18,10 @@ public class Dish {
     private String name; // 요리명
     private Integer basePrice; // 기본구성 가격
 
+    private Integer popularityRank; // 인기순
+    private Integer recommendRank;  // 추천순
+    // 최신순: id 사용
+
     // 테이블 매핑
     @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DishIngredient> dishIngredients = new ArrayList<>();
