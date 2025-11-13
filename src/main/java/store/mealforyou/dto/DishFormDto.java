@@ -11,10 +11,12 @@ public class DishFormDto {
     private String imageUrl;
     private Integer basePrice;
 
-    private static ModelMapper modelMapper = new ModelMapper();
-
     public static DishFormDto of(Dish dish){
-        DishFormDto dto = modelMapper.map(dish, DishFormDto.class);
+        DishFormDto dto = new DishFormDto(); // 새 DTO 객체 생성
+
+        dto.id = dish.getId(); // 수동 매핑
+        dto.name = dish.getName();
+        dto.basePrice = dish.getBasePrice();
 
         if (dish.getMainDishImage() != null) {
             dto.imageUrl = dish.getMainDishImage().getPath();

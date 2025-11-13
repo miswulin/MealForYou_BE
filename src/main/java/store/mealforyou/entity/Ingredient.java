@@ -1,10 +1,9 @@
 package store.mealforyou.entity;
 
-import store.mealforyou.constant.IngredientCategory;
-import store.mealforyou.constant.StockUnit;
-
 import lombok.*;
 import jakarta.persistence.*;
+import store.mealforyou.constant.ProductCategory;
+import store.mealforyou.constant.ProductTag;
 
 @Entity
 @Getter @Setter
@@ -16,13 +15,11 @@ public class Ingredient {
     private Long id;
 
     private String name; // 식재료명
-    private String origin; // 원산지
-    private Integer unitCost; // 단가(quantity가 1일 때 가격)
-    private Integer stock; // 재고
+    private Integer unitCost; // 가격
 
     @Enumerated(EnumType.STRING)
-    private IngredientCategory category; // 식재료 카테고리
+    private ProductCategory productCategory; // 소스/맵기, 기본옵션, 추가옵션
 
     @Enumerated(EnumType.STRING)
-    private StockUnit stockUnit; // 재고 단위
+    private ProductTag productTag; // 태그
 }

@@ -9,6 +9,7 @@ import store.mealforyou.repository.DishRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -17,7 +18,7 @@ public class DishService {
     private final DishRepository dishRepository;
 
     public List<DishFormDto> getDishes() {
-        List<Dish> dishes = dishRepository.findAllWithMainImage();
+        List<Dish> dishes = dishRepository.findAllWithDishImages();
         List<DishFormDto> dishesDto = new ArrayList<>();
         dishes.forEach(s -> dishesDto.add(DishFormDto.of(s)));
 

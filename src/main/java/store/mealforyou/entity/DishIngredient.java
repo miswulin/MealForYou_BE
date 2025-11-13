@@ -1,7 +1,5 @@
 package store.mealforyou.entity;
 
-import store.mealforyou.constant.Unit;
-
 import lombok.*;
 import jakarta.persistence.*;
 
@@ -15,10 +13,6 @@ public class DishIngredient {
     private Long id;
 
     private Double quantity; // 해당 식재료의 수량
-
-    @Enumerated(EnumType.STRING)
-    private Unit unit; // 해당 식재료의 단위
-
 
     // 테이블 매핑
     @ManyToOne(fetch = FetchType.LAZY)
