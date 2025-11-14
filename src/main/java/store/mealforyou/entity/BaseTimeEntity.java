@@ -1,4 +1,4 @@
-package me.swudam.jangbo.entity;
+package store.mealforyou.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -24,11 +24,11 @@ public abstract class BaseTimeEntity {
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = this.updatedAt = java.time.LocalDateTime.now();
+        this.createdAt = this.updatedAt = LocalDateTime.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = java.time.LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 }

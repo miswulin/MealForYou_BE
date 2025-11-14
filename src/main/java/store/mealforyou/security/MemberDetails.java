@@ -8,9 +8,9 @@ import store.mealforyou.entity.Member;
 import java.util.Collection;
 import java.util.List;
 
-public class MemberPrincipal implements UserDetails {
+public class MemberDetails implements UserDetails {
     private final Member member;
-    public MemberPrincipal(Member member) {
+    public MemberDetails(Member member) {
         this.member = member;
     }
 

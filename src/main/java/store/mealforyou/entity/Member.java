@@ -24,11 +24,11 @@ public class Member {
     @Column(nullable = false, length = 10)
     private String name; // 이름
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 60) // BCrypt 해시는 보통 60자
     private String password; // 비밀번호
 
     @Column(name = "phone_number", nullable = false, length = 20)
-    private String phoneE16; // 전화번호 (e.164 정규화)
+    private String phoneE164; // 전화번호 (e.164 정규화)
 
     @Embedded
     private Address address;
@@ -36,6 +36,6 @@ public class Member {
     // 마이페이지에서 수정하기 위한 메서드
     public void updateName(String name) { this.name = name; }
     public void updatePassword(String password) { this.password = password; }
-    public void updatePhone(String phone) { this.phoneE16 = phone; }
+    public void updatePhone(String phone) { this.phoneE164 = phone; }
     public void updateAddress(Address address) { this.address = address; }
 }
