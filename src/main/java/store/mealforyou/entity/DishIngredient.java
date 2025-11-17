@@ -12,7 +12,7 @@ public class DishIngredient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Double quantity; // 해당 식재료의 수량
+    private int quantity; // 해당 식재료의 수량
 
     // 테이블 매핑
     @ManyToOne(fetch = FetchType.LAZY)

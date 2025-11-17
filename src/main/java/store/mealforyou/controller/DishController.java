@@ -2,10 +2,8 @@ package store.mealforyou.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import store.mealforyou.dto.DishDetailDto;
 import store.mealforyou.dto.DishFormDto;
 import store.mealforyou.dto.MainPageDishesDto;
 import store.mealforyou.service.DishService;
@@ -39,5 +37,12 @@ public class DishController {
     public ResponseEntity<List<DishFormDto>> searchDishes(
             @RequestParam(name = "keyword") String keyword) {
         return ResponseEntity.ok().body(dishService.searchDishes(keyword));
+    }
+
+    // 4.1.1 제품 소개
+    @GetMapping("/{dishId}") // (경로: /api/dishes/{dishId})
+    public ResponseEntity<DishDetailDto> getDishDetail(
+            @PathVariable("dishId") Long dishId) {
+        return ResponseEntity.ok().body(dishService.getDishDetail(dishId));
     }
 }

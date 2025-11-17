@@ -4,6 +4,8 @@ import lombok.*;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 import store.mealforyou.constant.ImageType;
 
@@ -24,13 +26,13 @@ public class Dish {
 
     // 테이블 매핑
     @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DishIngredient> dishIngredients = new ArrayList<>();
+    private Set<DishIngredient> dishIngredients = new HashSet<>();
 
     @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DishImage> dishImages = new ArrayList<>();
+    private Set<DishImage> dishImages = new HashSet<>();
 
     @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Interest> interests = new ArrayList<>();
+    private Set<Interest> interests = new HashSet<>();
 
     public DishImage getMainDishImage() {
         if (this.dishImages == null || this.dishImages.isEmpty()) {
