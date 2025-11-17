@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class DishService {
     private final DishRepository dishRepository;
 
-    // 전체메뉴 조회
+    // 3.1.1. 전체메뉴 조회
     public List<DishFormDto> getDishes(String sort) {
         List<Dish> dishes = dishRepository.findAllWithDishImages();
 
@@ -52,7 +52,7 @@ public class DishService {
                 .collect(Collectors.toList());
     }
 
-    // 홈 화면 큐레이션
+    // 3.1.1. 홈 화면 큐레이션
     public MainPageDishesDto getMainPageDishes() {
 
         // 인기 상품 5개 조회
@@ -77,5 +77,14 @@ public class DishService {
                 .collect(Collectors.toList());
 
         return new MainPageDishesDto(popularDishesDto, newDishesDto, recommendedDishesDto);
+    }
+
+    // 3.1.2. 메뉴 검색
+    public List<DishFormDto> searchDishes(String keyword) {
+        List<Dish> dishes = dishRepository.findByNameContainingWithDishImages(keyword);
+
+        return dishes.stream()
+                .map(DishFormDto::of)
+                .collect(Collectors.toList());
     }
 }

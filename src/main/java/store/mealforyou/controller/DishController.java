@@ -20,7 +20,7 @@ import java.util.List;
 public class DishController {
     private final DishService dishService;
 
-    // 전체메뉴 조회
+    // 3.1.1. 전체메뉴 조회
     @GetMapping
     public ResponseEntity<List<DishFormDto>> getDishes(
             @RequestParam(name = "sort", required = false, defaultValue = "default") String sort) {
@@ -28,9 +28,16 @@ public class DishController {
         return ResponseEntity.ok().body(dishService.getDishes(sort));
     }
 
-    // 홈 화면 큐레이션
+    // 3.1.1. 홈 화면 큐레이션
     @GetMapping("/main") // (경로: /api/dishes/main)
     public ResponseEntity<MainPageDishesDto> getMainDishes() {
         return ResponseEntity.ok().body(dishService.getMainPageDishes());
+    }
+
+    // 3.1.2. 메뉴 검색
+    @GetMapping("/search") // (경로: /api/dishes/search)
+    public ResponseEntity<List<DishFormDto>> searchDishes(
+            @RequestParam(name = "keyword") String keyword) {
+        return ResponseEntity.ok().body(dishService.searchDishes(keyword));
     }
 }
