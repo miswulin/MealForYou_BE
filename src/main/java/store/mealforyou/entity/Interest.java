@@ -10,7 +10,7 @@ import java.time.ZonedDateTime;
 
 @Entity
 @Getter @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Interest {
 
     @Id
@@ -23,8 +23,11 @@ public class Interest {
     private InterestStatus status; // 상태
 
 //    // 테이블 매핑
-//    @JoinColumn(name = "id")
+//    TODO: private Long memberId; 삭제 및 주석 해제
+//    @JoinColumn(name = "member_id")
 //    private Member member; // 관심상품 담은 회원
+    // 임시 필드: 회원 ID
+    private Long memberId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dish_id")
