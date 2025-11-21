@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "orders") // SQL 테이블명 'orders' 명시 (SQL 예약어 충돌 방지)
+@Table(name = "orders")
 @Getter @Setter
 @NoArgsConstructor
 public class Order {
@@ -20,6 +20,14 @@ public class Order {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "zipCode", column = @Column(name = "delivery_zip_code")),
+            @AttributeOverride(name = "roadAddress", column = @Column(name = "delivery_road_address")),
+            @AttributeOverride(name = "detailAddress", column = @Column(name = "delivery_detail_address"))
+    })
+    private Address deliveryAddress;
 
     @Column(name = "order_number")
     private String orderNumber;
@@ -41,7 +49,7 @@ public class Order {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    // 양방향 매핑 (선택사항이지만 조회 편의를 위해 추천)
+    // 양방향 매핑
     @OneToMany(mappedBy = "order")
     private List<OrderItem> orderItems = new ArrayList<>();
 }

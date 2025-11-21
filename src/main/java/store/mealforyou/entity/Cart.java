@@ -5,6 +5,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name="carts")
 @Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Cart {
@@ -13,7 +14,7 @@ public class Cart {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false) // SQL: member_id
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     @Column(name = "created_at")

@@ -36,6 +36,11 @@ public class OrderService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("회원 없음"));
 
+        String addressStr = "배송지 정보 없음";
+        if (member.getAddress() != null) {
+            addressStr = member.getAddress().getRoadAddress() + " " + member.getAddress().getDetailAddress();
+        }
+
         List<CartItem> selectedItems = cartItemRepository.findAllById(cartItemIds);
         List<OrderItemDto> orderItems = new ArrayList<>();
         int totalProductPriceInt = 0;
@@ -65,7 +70,7 @@ public class OrderService {
         return OrderSheetDto.builder()
                 .receiverName(member.getName())
                 .receiverPhone(member.getPhoneE164())
-                .address("서울 노원구...")
+                .address(addressStr)
                 .orderItems(orderItems)
                 .totalProductPrice(formatPrice(totalProductPriceInt))
                 .shippingFee(formatPrice(shippingFeeInt))
@@ -85,6 +90,7 @@ public class OrderService {
         // 주문 생성
         Order order = new Order();
         order.setMember(member);
+        order.setDeliveryAddress(member.getAddress());
         order.setOrderNumber(RandomStringUtils.randomNumeric(12)); // 없으면 UUID 등 사용
         order.setTotalAmount(totalAmount + shippingFee);
         order.setShippingFee(shippingFee);
@@ -136,6 +142,12 @@ public class OrderService {
         String fullDate = order.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String shortDate = order.getCreatedAt().format(DateTimeFormatter.ofPattern("yy.MM.dd"));
 
+        String addressStr = "배송지 정보 없음";
+        if (order.getDeliveryAddress() != null) {
+            addressStr = order.getDeliveryAddress().getRoadAddress() + " "
+                    + order.getDeliveryAddress().getDetailAddress();
+        }
+
         List<OrderItemDto> items = new ArrayList<>();
         for(OrderItem oi : order.getOrderItems()) {
             List<OrderItemIngredient> opts = orderItemIngredientRepository.findAllByOrderItemId(oi.getId());
@@ -160,7 +172,7 @@ public class OrderService {
                 .status(order.getOrderStatus())
                 .receiverName(order.getMember().getName())
                 .receiverPhone(order.getMember().getPhoneE164())
-                .address("주소 정보")
+                .address(addressStr)
                 .items(items)
                 .totalProductPrice(formatPrice(order.getTotalAmount() - order.getShippingFee()))
                 .shippingFee(formatPrice(order.getShippingFee()))
