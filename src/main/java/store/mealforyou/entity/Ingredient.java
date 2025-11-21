@@ -7,7 +7,7 @@ import store.mealforyou.constant.ProductTag;
 
 @Entity
 @Getter @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(/* access = AccessLevel.PROTECTED */)
 public class Ingredient {
 
     @Id
@@ -15,6 +15,7 @@ public class Ingredient {
     private Long id;
 
     private String name; // 식재료명
+
     private Integer unitCost; // 가격
 
     @Enumerated(EnumType.STRING)

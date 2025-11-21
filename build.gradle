@@ -44,6 +44,9 @@ dependencies {
     // 테스트
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+
+    // Apache Commons Lang 추가
+    implementation 'org.apache.commons:commons-lang3:3.14.0'
 }
 
 test {

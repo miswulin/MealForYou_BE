@@ -1,33 +1,30 @@
 package store.mealforyou.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import store.mealforyou.constant.ChangeMode;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-//@Table(
-//        uniqueConstraints = {
-//                @UniqueConstraint(
-//                        name = "UK_cart_item_ingredient", // 제약조건 이름
-//                        columnNames = {"cart_item_id", "ingredient_id"}
-//                )
-//        }
-//)
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "UK_cart_item_ingredient", // 제약조건 이름
+                        columnNames = {"cart_item_id", "ingredient_id"}
+                )
+        }
+)
 public class CartItemIngredient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    // 🌟🌟🌟
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "cart_item_id", nullable = false)
-//    private CartItem cartItem;
+    // 🌟🌟🌟
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_item_id", nullable = false)
+    private CartItem cartItem;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ingredient_id", nullable = false)

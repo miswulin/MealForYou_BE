@@ -12,27 +12,18 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // 1. CSRF, Form Login, Http Basic 인증 비활성화 (API 서버이므로)
+                // 1. CSRF 보호 비활성화 (Postman 테스트 시 필수)
                 .csrf(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
 
-                // 2. 요청별 권한 설정
-                .authorizeHttpRequests(authorize -> authorize
-                        // /api/dishes/ 로 시작하는 모든 경로는 인증 없이 허용
-                        .requestMatchers("/api/dishes/**").permitAll()
-
-                        // H2 콘솔 접근 허용 (개발용)
-                        .requestMatchers("/h2-console/**").permitAll()
-
-                        // 그 외 모든 요청은 인증 필요
-                        .anyRequest().authenticated()
-                )
-
-                // H2 콘솔은 iframe을 사용하므로 X-Frame-Options 비활성화
-                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
+                // 2. 요청에 대한 권한 설정
+                .authorizeHttpRequests(auth -> auth
+                        // '/api/'로 시작하는 모든 요청은 인증 없이 허용 (permitAll)
+                        .requestMatchers("/api/**").permitAll()
+                        // 그 외의 요청도 일단 허용 (테스트 편의상) or .authenticated()로 막기
+                        .anyRequest().permitAll()
+                );
 
         return http.build();
     }
