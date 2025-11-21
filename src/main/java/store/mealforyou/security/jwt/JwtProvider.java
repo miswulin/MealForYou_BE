@@ -29,11 +29,13 @@ public class JwtProvider {
     private final MemberDetailService memberDetailService;
     private Key key;
 
+    // 서명용 비밀키 초기화
     @PostConstruct
     void init() {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
+    // JWT 토큰 생성
     public String createAccessToken(String email) {
         Instant now = Instant.now();
         return Jwts.builder()
@@ -56,6 +58,7 @@ public class JwtProvider {
                 .compact();
     }
 
+    // JWT 유효성 검증
     public boolean validate(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
@@ -65,11 +68,13 @@ public class JwtProvider {
         }
     }
 
+    // 토큰에서 사용자 이메일 추출
     public String getEmail(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build()
                 .parseClaimsJws(token).getBody().getSubject();
     }
 
+    // JWT로 인증 객체 생성
     public Authentication getAuthentication(String token) {
         var userDeatils = memberDetailService.loadUserByUsername(getEmail(token));
         return new UsernamePasswordAuthenticationToken(userDeatils, null, userDeatils.getAuthorities());
