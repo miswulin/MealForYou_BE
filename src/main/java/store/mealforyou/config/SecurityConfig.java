@@ -22,7 +22,7 @@ public class SecurityConfig {
                 // 2. 요청별 권한 설정
                 .authorizeHttpRequests(authorize -> authorize
                         // /api/dishes/ 로 시작하는 모든 경로는 인증 없이 허용
-                        .requestMatchers("/api/dishes/**").permitAll()
+                        .requestMatchers("/dishes/**").permitAll()
 
                         // H2 콘솔 접근 허용 (개발용)
                         .requestMatchers("/h2-console/**").permitAll()

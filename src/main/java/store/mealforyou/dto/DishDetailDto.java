@@ -18,6 +18,7 @@ public class DishDetailDto {
     private Long dishId;
     private String dishName;
     private int basePrice;
+    private boolean isInterested;
 
     // 상세 정보 이미지만 담을 리스트
     private List<DishDetailImageDto> dishImages;
