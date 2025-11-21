@@ -19,8 +19,8 @@ public class AuthController {
     // 이메일 인증코드 발송 (재발송 포함)
     @PostMapping("/email/send")
     public ResponseEntity<?> sendEmailCode(@RequestBody @Valid SendCodeRequest request) {
-        emailAuthService.sendCode(request.email());
-        return ResponseEntity.ok("인증 코드가 이메일로 전송되었습니다.");
+        String code = emailAuthService.sendCode(request.email());
+        return ResponseEntity.ok("인증 코드가 이메일로 전송되었습니다. (devCode=" + code + ")");
     }
 
     // 이메일 인증코드 검증

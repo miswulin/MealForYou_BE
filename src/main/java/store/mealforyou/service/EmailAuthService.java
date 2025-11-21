@@ -12,7 +12,7 @@ public class EmailAuthService {
     private final EmailSenderService emailSenderService;
 
     // 인증 코드를 생성하고 이메일로 발송하며, Redis에 저장하는 메서드
-    public void sendCode(String email) {
+    public String sendCode(String email) {
         // 4자리 인증코드 생성
         String code = codeGenerator.generateCode();
 
@@ -21,6 +21,8 @@ public class EmailAuthService {
 
         // 사용자에게 인증코드 이메일 발송
         emailSenderService.sendAuthCode(email, code);
+
+        return code;
     }
 
     // 사용자가 입력한 인증코드를 검증하는 메서드

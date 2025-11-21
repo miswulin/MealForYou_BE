@@ -3,6 +3,7 @@ package store.mealforyou.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -36,13 +37,31 @@ public class SecurityConfig {
                 // 세션 사용 안 함: JWT 기반이므로 서버는 인증 상태를 세션에 저장하지 않음 (Stateless)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
+                // 401 인증실패
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((req, res, authEx) -> {
+                            res.setStatus(HttpStatus.UNAUTHORIZED.value());
+                            res.setContentType("application/json;charset=UTF-8");
+                            res.getWriter().write("{\"error\":\"인증이 필요합니다.\"}");
+                        })
+                // 403 권한부족 (Access Denied)
+                        .accessDeniedHandler((req, res, deniedEx) -> {
+                            res.setStatus(HttpStatus.FORBIDDEN.value());
+                            res.setContentType("application/json;charset=UTF-8");
+                            res.getWriter().write("{\"error\":\"접근 권한이 없습니다.\"}");
+                        })
+                )
+
+
                 // 경로별 인가(Authorization) 규칙
                 .authorizeHttpRequests(auth -> auth
                         // 회원가입/로그인/토큰재발급/이메일 인증 관련 모두 허용
                         .requestMatchers("/api/auth/signup").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/refresh").permitAll()
+                        .requestMatchers("/api/auth/logout").permitAll()
                         .requestMatchers("/api/auth/email/**").permitAll()
+                        .requestMatchers("/dishes/**").permitAll()
                         // 정적 리소스, 헬스체크
                         .requestMatchers("/", "/health").permitAll()
 
