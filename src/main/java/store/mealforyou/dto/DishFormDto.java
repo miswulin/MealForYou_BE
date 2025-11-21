@@ -1,26 +1,34 @@
 package store.mealforyou.dto;
 
-import lombok.Getter;
-import org.modelmapper.ModelMapper;
+import lombok.*;
 import store.mealforyou.entity.Dish;
 
 @Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DishFormDto {
     private Long id;
     private String name;
     private String imageUrl;
     private Integer basePrice;
 
+    @Builder.Default
+    private boolean isInterested = false;
+
     public static DishFormDto of(Dish dish){
-        DishFormDto dto = new DishFormDto(); // 새 DTO 객체 생성
-
-        dto.id = dish.getId(); // 수동 매핑
-        dto.name = dish.getName();
-        dto.basePrice = dish.getBasePrice();
-
+        String repImgUrl = "";
         if (dish.getMainDishImage() != null) {
-            dto.imageUrl = dish.getMainDishImage().getPath();
+            repImgUrl = dish.getMainDishImage().getPath();
         }
-        return dto;
+
+        return DishFormDto.builder()
+                .id(dish.getId())
+                .name(dish.getName())
+                .basePrice(dish.getBasePrice())
+                .imageUrl(repImgUrl)
+                .isInterested(false)
+                .build();
     }
 }
