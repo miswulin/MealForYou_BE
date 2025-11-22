@@ -18,6 +18,7 @@ public class Dish {
     private Long id;
 
     private String name; // 요리명
+
     private Integer basePrice; // 기본구성 가격
 
     private Integer popularityRank; // 인기순
