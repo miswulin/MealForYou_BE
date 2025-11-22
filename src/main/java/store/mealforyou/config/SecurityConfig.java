@@ -28,7 +28,6 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
-    /*
     // 스프링 시큐리티 필터 체인 설정
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -98,8 +97,8 @@ public class SecurityConfig {
 
         return http.build();
     }
-    */
 
+    /*
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -117,4 +116,5 @@ public class SecurityConfig {
 
         return http.build();
     }
+     */
 }

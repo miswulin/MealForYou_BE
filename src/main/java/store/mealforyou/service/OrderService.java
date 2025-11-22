@@ -30,13 +30,13 @@ public class OrderService {
     private final OrderItemIngredientRepository orderItemIngredientRepository;
     private final NumberFormat numberFormat = NumberFormat.getInstance(Locale.KOREA);
 
-    // 주문서 조회 (체크된 아이템만)
+    // 주문서 조회 (선택된 상품만 포함)
     @Transactional(readOnly = true)
     public OrderSheetDto getOrderSheet(Long memberId, List<Long> cartItemIds) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("회원 없음"));
+                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
 
-        String addressStr = "배송지 정보 없음";
+        String addressStr = "배송지가 존재하지 않습니다.";
         if (member.getAddress() != null) {
             addressStr = member.getAddress().getRoadAddress() + " " + member.getAddress().getDetailAddress();
         }
@@ -48,7 +48,8 @@ public class OrderService {
         for (CartItem item : selectedItems) {
             List<CartItemIngredient> options = cartItemIngredientRepository.findAllByCartItemId(item.getId());
 
-            String optionStr = options.stream()
+            // 옵션 문자열 생성 (비어 있으면 빈 문자열)
+            String optionStr = options.isEmpty() ? "" : options.stream()
                     .map(o -> o.getIngredient().getName() + "(" + o.getQuantity().intValue() + "개)")
                     .collect(Collectors.joining(", "));
 
@@ -56,7 +57,7 @@ public class OrderService {
 
             orderItems.add(OrderItemDto.builder()
                     .dishName(item.getDish().getName())
-                    .optionDescription(optionStr.isEmpty() ? "기본 구성" : optionStr)
+                    .optionDescription(optionStr) // 깔끔하게 표시
                     .price(formatPrice(itemTotal))
                     .count(item.getQuantity() + "개")
                     .imageUrl(item.getDish().getMainDishImage() != null ? item.getDish().getMainDishImage().getPath() : "")
@@ -91,7 +92,7 @@ public class OrderService {
         Order order = new Order();
         order.setMember(member);
         order.setDeliveryAddress(member.getAddress());
-        order.setOrderNumber(RandomStringUtils.randomNumeric(12)); // 없으면 UUID 등 사용
+        order.setOrderNumber(RandomStringUtils.randomNumeric(12)); // 실무에선 UUID 권장
         order.setTotalAmount(totalAmount + shippingFee);
         order.setShippingFee(shippingFee);
         order.setPaymentType(request.getPaymentType());
@@ -102,7 +103,7 @@ public class OrderService {
 
         // 장바구니 -> 주문 이관 작업
         for (CartItem ci : cartItems) {
-            // A. OrderItem 생성
+            // OrderItem 생성
             OrderItem oi = new OrderItem();
             oi.setOrder(order);
             oi.setDish(ci.getDish());
@@ -111,11 +112,11 @@ public class OrderService {
             oi.setCreatedAt(LocalDateTime.now());
             orderItemRepository.save(oi);
 
-            // B. 재료 옵션(CartItemIngredient) 조회
+            // CartItemIngredient 조회
             List<CartItemIngredient> ciiList = cartItemIngredientRepository.findAllByCartItemId(ci.getId());
 
             for (CartItemIngredient cii : ciiList) {
-                // B-1. OrderItemIngredient로 복사
+                // OrderItemIngredient로 복사
                 OrderItemIngredient oii = new OrderItemIngredient();
                 oii.setOrderItem(oi);
                 oii.setIngredient(cii.getIngredient());
@@ -125,10 +126,10 @@ public class OrderService {
                 orderItemIngredientRepository.save(oii);
             }
 
-            // C. ★ 자식 데이터(재료 옵션) 먼저 삭제 (이제 에러 안 남!)
+            // 자식 데이터(재료 옵션) 먼저 삭제
             cartItemIngredientRepository.deleteAll(ciiList);
 
-            // D. 부모 데이터(장바구니 아이템) 삭제
+            // 부모 데이터(장바구니 아이템) 삭제
             cartItemRepository.delete(ci);
         }
         return order.getId();
@@ -142,7 +143,7 @@ public class OrderService {
         String fullDate = order.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String shortDate = order.getCreatedAt().format(DateTimeFormatter.ofPattern("yy.MM.dd"));
 
-        String addressStr = "배송지 정보 없음";
+        String addressStr = "배송지가 존재하지 않습니다.";
         if (order.getDeliveryAddress() != null) {
             addressStr = order.getDeliveryAddress().getRoadAddress() + " "
                     + order.getDeliveryAddress().getDetailAddress();
@@ -151,13 +152,15 @@ public class OrderService {
         List<OrderItemDto> items = new ArrayList<>();
         for(OrderItem oi : order.getOrderItems()) {
             List<OrderItemIngredient> opts = orderItemIngredientRepository.findAllByOrderItemId(oi.getId());
-            String optionStr = opts.stream()
+
+            // 옵션 문자열 생성 (비어 있으면 빈 문자열)
+            String optionStr = opts.isEmpty() ? "" : opts.stream()
                     .map(o -> o.getIngredient().getName() + "(" + o.getQuantity().intValue() + "개)")
                     .collect(Collectors.joining(", "));
 
             items.add(OrderItemDto.builder()
                     .dishName(oi.getDish().getName())
-                    .optionDescription(optionStr.isEmpty() ? "기본 구성" : optionStr)
+                    .optionDescription(optionStr) // 깔끔하게 표시
                     .price(formatPrice(oi.getPrice() * oi.getQuantity()))
                     .count(oi.getQuantity() + "개")
                     .imageUrl(oi.getDish().getMainDishImage() != null ? oi.getDish().getMainDishImage().getPath() : "")

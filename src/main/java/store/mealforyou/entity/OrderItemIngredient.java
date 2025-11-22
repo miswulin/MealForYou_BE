@@ -21,7 +21,7 @@ public class OrderItemIngredient {
     @JoinColumn(name = "ingredient_id", nullable = false)
     private Ingredient ingredient;
 
-    @Column(nullable = false) // Default 'ABSOLUTE'
+    @Column(nullable = false)
     private String mode = "ABSOLUTE";
 
     @Column(nullable = false)

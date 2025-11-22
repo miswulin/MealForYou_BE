@@ -9,7 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CartListDto {
     private List<CartItemDto> cartItems;
-    private String totalProductPrice; // "38,500원"
-    private String shippingFee;       // "2,500원"
-    private String totalOrderPrice;   // "41,000원"
+    private String totalProductPrice;
+    private String shippingFee;
+    private String totalOrderPrice;
 }

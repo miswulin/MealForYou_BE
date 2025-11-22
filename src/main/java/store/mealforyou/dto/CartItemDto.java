@@ -13,10 +13,10 @@ public class CartItemDto {
     private String dishName;
     private String imageUrl;
 
-    private String optionDescription; // "마늘(10g) 2개, ..."
+    private String optionDescription;
 
-    private String quantity;    // "1개"
-    private String totalPrice;  // "16,500원"
+    private String quantity;
+    private String totalPrice;
 
     private List<CartItemIngredientDto> ingredients;
 }

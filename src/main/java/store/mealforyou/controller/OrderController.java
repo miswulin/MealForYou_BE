@@ -8,14 +8,13 @@ import store.mealforyou.service.OrderService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/orders") // 공통 URL 프리픽스 적용
+@RequestMapping("/api/orders") // 공통 URL
 @RequiredArgsConstructor
 public class OrderController {
 
     private final OrderService orderService;
 
     // 주문서 (체크된 아이템만 조회)
-    // URL: GET /api/orders/sheet?items=1,2,3
     @GetMapping("/sheet")
     public ResponseEntity<OrderSheetDto> getOrderSheet(
             @RequestHeader("Member-Id") Long memberId,
@@ -24,7 +23,6 @@ public class OrderController {
     }
 
     // 주문 생성 (결제)
-    // URL: POST /api/orders
     @PostMapping
     public ResponseEntity<Long> placeOrder(
             @RequestHeader("Member-Id") Long memberId,
@@ -33,14 +31,12 @@ public class OrderController {
     }
 
     // 주문 완료 페이지
-    // URL: GET /api/orders/{orderId}/complete
     @GetMapping("/{orderId}/complete")
     public ResponseEntity<OrderDetailDto> getOrderComplete(@PathVariable Long orderId) {
         return ResponseEntity.ok(orderService.getOrderDetail(orderId));
     }
 
     // 주문 내역 목록
-    // URL: GET /api/orders/history
     @GetMapping("/history")
     public ResponseEntity<List<OrderDetailDto>> getOrderHistory(@RequestHeader("Member-Id") Long memberId) {
         return ResponseEntity.ok(orderService.getOrderHistory(memberId));

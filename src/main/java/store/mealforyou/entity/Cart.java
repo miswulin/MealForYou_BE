@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name="carts")
 @Getter @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Cart {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

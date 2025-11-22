@@ -8,6 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 public class CartItemIngredientDto {
     private Long cartItemIngredientId;
-    private String name;  // 재료명
-    private int quantity; // 옵션 수량
+    private String name;
+    private int quantity;
 }

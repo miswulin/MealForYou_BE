@@ -12,8 +12,8 @@ import java.util.List;
 public class OrderDetailDto {
     private Long orderId;
     private String orderNumber;
-    private String orderDate;      // "2025-10-11 17:40:30"
-    private String shortDate;      // "25.10.11"
+    private String orderDate;
+    private String shortDate;
     private OrderStatus status;
 
     private String receiverName;

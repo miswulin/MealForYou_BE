@@ -5,10 +5,9 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "cart_item",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"cart_id", "dish_id"})) // SQL: UNIQUE KEY
+@Table(name = "cart_item")
 @Getter @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class CartItem {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

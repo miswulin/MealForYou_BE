@@ -7,7 +7,7 @@ import store.mealforyou.constant.ChangeMode;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Table(
         uniqueConstraints = {
                 @UniqueConstraint(

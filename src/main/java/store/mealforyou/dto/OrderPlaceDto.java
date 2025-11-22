@@ -8,7 +8,7 @@ import java.util.List;
 @Getter @Setter
 @NoArgsConstructor
 public class OrderPlaceDto {
-    private List<Long> cartItemIds; // 체크된 장바구니 ID들
+    private List<Long> cartItemIds; // 선택된 장바구니 상품 ID들
     private PaymentType paymentType;
     private String receiverName;
     private String receiverPhone;
