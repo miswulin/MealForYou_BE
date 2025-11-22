@@ -67,14 +67,21 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/logout").permitAll()
                         .requestMatchers("/api/auth/email/**").permitAll()
 
-                                // /api/dishes/ 로 시작하는 모든 경로는 인증 없이 허용
-                                .requestMatchers("/dishes/**").permitAll()
+                        // /api/dis hes/ 로 시작하는 모든 경로는 인증 없이 허용
+                        .requestMatchers("/dishes/**").permitAll()
 
-                                // H2 콘솔 접근 허용 (개발용)
-                                .requestMatchers("/h2-console/**").permitAll()
+                        // H2 콘솔 접근 허용 (개발용)
+                        .requestMatchers("/h2-console/**").permitAll()
 
                         // 정적 리소스, 헬스체크
                         .requestMatchers("/", "/health").permitAll()
+
+                        // Swagger / OpenAPI 문서 경로 허용
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**"
+                        ).permitAll()
 
                         // 그 외 모든 요청은 인증 필요
                         .anyRequest().authenticated()

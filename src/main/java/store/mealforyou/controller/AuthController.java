@@ -1,5 +1,7 @@
 package store.mealforyou.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +13,7 @@ import store.mealforyou.service.EmailAuthService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
+@Tag(name = "인증/회원 관련 API", description = "이메일 인증, 회원가입, 로그인, 토큰 재발급, 로그아웃 기능을 제공합니다.")
 public class AuthController {
 
     private final AuthService authService; // 회원가입/로그인/토큰 재발급
@@ -18,6 +21,11 @@ public class AuthController {
 
     // 이메일 인증코드 발송 (재발송 포함)
     @PostMapping("/email/send")
+    @Operation(
+            summary = "이메일 인증코드 발송",
+            description = "회원가입 전에 이메일 소유자를 확인하기 위해 4자리 인증코드를 발송합니다." +
+                    "\n개발 환경에서는 편의성을 위해 응답 메시지에 devCode를 포함했습니다."
+    )
     public ResponseEntity<?> sendEmailCode(@RequestBody @Valid SendCodeRequest request) {
         String code = emailAuthService.sendCode(request.email());
         return ResponseEntity.ok("인증 코드가 이메일로 전송되었습니다. (devCode=" + code + ")");
@@ -25,6 +33,10 @@ public class AuthController {
 
     // 이메일 인증코드 검증
     @PostMapping("/email/verify")
+    @Operation(
+            summary = "이메일 인증코드 검증",
+            description = "사용자가 입력한 4자리 인증코드가 Redis 서버에 저장된 값과 일치하는지 확인하고, 성공 시 24시간 유효한 인증 플래그를 저장합니다."
+    )
     public ResponseEntity<?> verifyEmailCode(@RequestBody @Valid VerifyCodeRequest request) {
         emailAuthService.verifyCode(request.email(), request.code());
         return ResponseEntity.ok("이메일 인증이 완료되었습니다.");
@@ -32,6 +44,10 @@ public class AuthController {
 
     // 회원가입
     @PostMapping("/signup")
+    @Operation(
+            summary = "회원가입",
+            description = "이메일 인증이 완료된 사용자가 가입을 위한 정보를 입력하여 회원가입을 수행합니다."
+    )
     public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest request) {
         Long id = authService.signup(request);
         return ResponseEntity.ok("회원가입이 성공 (id=" + id + ")");
@@ -39,6 +55,10 @@ public class AuthController {
 
     // 로그인 (Access + Refresh Token 반환)
     @PostMapping("/login")
+    @Operation(
+            summary = "로그인 및 JWT 토큰 발급",
+            description = "이메일과 비밀번호로 인증을 수행하고, Access Token과 Refresh Token을 발급합니다. Refresh Token은 Redis 서버에 저장됩니다."
+    )
     public ResponseEntity<TokenResponse> login(@RequestBody @Valid LoginRequest request) {
         TokenResponse tokens = authService.login(request);
         return ResponseEntity.ok(tokens);
@@ -46,6 +66,10 @@ public class AuthController {
 
     // Access Token 재발급 (refreshToken 하나만 받고, 서비스 계층에서 토큰 내부에서 email을 추출함)
     @PostMapping("/refresh")
+    @Operation(
+            summary = "Access Token 재발급",
+            description = "유효한 Refresh Token을 이용하여 새 Access Token과 새 Refresh Token을 발급합니다."
+    )
     public ResponseEntity<TokenResponse> refresh(@RequestParam String refreshToken) {
         TokenResponse tokens = authService.refresh(refreshToken);
         return ResponseEntity.ok(tokens);
@@ -53,6 +77,10 @@ public class AuthController {
 
     // 로그아웃 (refreshToken 하나만 보내면 되고, refreshToken 내부 email 추출 후 Redis에서 제거함)
     @PostMapping("/logout")
+    @Operation(
+            summary = "로그아웃",
+            description = "클라이언트가 보유한 Refresh Token에서 이메일을 추출하고, Redis에 저장된 해당 사용자의 Refresh Token을 삭제하여 재발급을 차단합니다."
+    )
     public ResponseEntity<?> logout(@RequestParam String refreshToken) {
         String email = authService.extractEmail(refreshToken);
         authService.logout(email);
