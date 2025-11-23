@@ -97,24 +97,4 @@ public class SecurityConfig {
 
         return http.build();
     }
-
-    /*
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                // 1. CSRF 보호 끄기 (POST 요청 테스트할 때 필수)
-                .csrf(AbstractHttpConfigurer::disable)
-
-                // 2. 기본 로그인 폼, HTTP Basic 인증 끄기 (화면 안 뜨게)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
-
-                // 3. [핵심] 모든 요청에 대해 "통과(permitAll)" 시키기
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
-                );
-
-        return http.build();
-    }
-     */
 }

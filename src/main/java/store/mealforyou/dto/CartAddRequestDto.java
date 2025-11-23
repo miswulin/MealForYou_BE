@@ -1,18 +1,18 @@
 package store.mealforyou.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import java.util.List;
 
-@Getter
+@Getter @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class CartAddRequestDto {
     private Long dishId;
-    private int quantity;
     private List<IngredientOptionDto> options;
 
-    @Getter
+    @Getter @Setter
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class IngredientOptionDto {
         private Long ingredientId;
         private int quantity;

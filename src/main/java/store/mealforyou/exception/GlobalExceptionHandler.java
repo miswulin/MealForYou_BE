@@ -41,9 +41,10 @@ public class GlobalExceptionHandler {
     // 기타 예상하지 못한 서버 오류
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGeneral(Exception e) {
+        e.printStackTrace(); // 콘솔에 실제 오류 출력
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("서버 내부 오류가 발생했습니다.");
+                .body("서버 내부 오류가 발생했습니다: " + e.getMessage());
     }
 
     // EntityNotFoundException 발생 시 404 Not Found 응답을 반환

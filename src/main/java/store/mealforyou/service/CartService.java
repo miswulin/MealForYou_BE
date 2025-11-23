@@ -31,16 +31,16 @@ public class CartService {
     // 장바구니에 상품 추가 (장바구니 담기 / 바로 구매 공용)
     // 특징: 중복 메뉴 체크 없이 항상 새로운 행(Row)을 생성함
     public Long addItemToCart(Long memberId, CartAddRequestDto request) {
-        // [검증] 재료 옵션이 없으면 저장 불가
+        // 옵션이 없으면 저장 불가
         if (request.getOptions() == null || request.getOptions().isEmpty()) {
-            throw new IllegalArgumentException("최소 1개 이상의 재료가 포함되어야 합니다.");
+            throw new IllegalArgumentException("옵션이 존재하지 않습니다.");
         }
 
         // 멤버 및 장바구니 조회 (없으면 생성)
         Cart cart = cartRepository.findByMemberId(memberId)
                 .orElseGet(() -> {
                     Member member = memberRepository.findById(memberId)
-                            .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+                            .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
                     Cart newCart = new Cart();
                     newCart.setMember(member);
                     newCart.setCreatedAt(LocalDateTime.now());
@@ -55,8 +55,8 @@ public class CartService {
         CartItem cartItem = new CartItem();
         cartItem.setCart(cart);
         cartItem.setDish(dish);
-        cartItem.setQuantity(request.getQuantity());
-        cartItem.setPrice(0); // 가격은 아래에서 계산 후 업데이트
+        cartItem.setQuantity(1);
+        cartItem.setPrice(0); // 가격은 추후 계산 뒤 반영
         cartItem.setCreatedAt(LocalDateTime.now());
 
         cartItemRepository.save(cartItem); // ID 생성을 위해 먼저 저장
@@ -179,5 +179,60 @@ public class CartService {
 
     private String formatPrice(int price) {
         return numberFormat.format(price) + "원";
+    }
+
+    // 상품 수량 변경
+    public CartListDto updateCartItemQuantity(Long memberId, Long cartItemId, CartItemQuantityUpdateDto dto) {
+
+        CartItem item = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
+
+        int newQuantity;
+
+        // 절대값 변경
+        if (dto.getQuantity() != null) {
+            newQuantity = dto.getQuantity();
+
+            // 증감 변경
+        } else if (dto.getDelta() != null) {
+            newQuantity = item.getQuantity() + dto.getDelta();
+
+        } else {
+            throw new IllegalArgumentException("quantity 또는 delta 중 하나는 반드시 전달해야 합니다.");
+        }
+
+        // 0 이하일 시 삭제 처리
+        if (newQuantity <= 0) {
+            deleteCartItem(memberId, cartItemId);
+            return getCartList(memberId);
+        }
+
+        item.setQuantity(newQuantity);
+        cartItemRepository.save(item);
+
+        return getCartList(memberId);
+    }
+
+    // 상품 단일 삭제
+    public void deleteCartItem(Long memberId, Long cartItemId) {
+        Cart cart = cartRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("장바구니가 존재하지 않습니다."));
+
+        CartItem item = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
+
+        // 옵션 먼저 삭제
+        List<CartItemIngredient> options = cartItemIngredientRepository.findAllByCartItemId(cartItemId);
+        cartItemIngredientRepository.deleteAll(options);
+
+        // 상품 삭제
+        cartItemRepository.delete(item);
+    }
+
+    // 상품 다중 삭제
+    public void deleteCartItems(Long memberId, List<Long> cartItemIds) {
+        for (Long id : cartItemIds) {
+            deleteCartItem(memberId, id);
+        }
     }
 }
