@@ -45,9 +45,15 @@ public class OrderService {
         for (CartItem item : selectedItems) {
             List<CartItemIngredient> options = cartItemIngredientRepository.findAllByCartItemId(item.getId());
 
-            String optionStr = options.isEmpty() ? "" : options.stream()
-                    .map(o -> o.getIngredient().getName() + "(" + o.getQuantity().intValue() + "개)")
-                    .collect(Collectors.joining(", "));
+            String optionStr = "";
+            if (!options.isEmpty()) {
+                optionStr = options.stream()
+                        .map(o -> o.getIngredient().getName() + " (" + o.getQuantity().intValue() + "개)")
+                        .collect(Collectors.joining(", "));
+                if (optionStr.length() > 25) {
+                    optionStr = optionStr.substring(0, 25) + "···";
+                }
+            }
 
             int itemTotal = item.getPrice() * item.getQuantity();
 
@@ -135,9 +141,15 @@ public class OrderService {
         for(OrderItem oi : order.getOrderItems()) {
             List<OrderItemIngredient> opts = orderItemIngredientRepository.findAllByOrderItemId(oi.getId());
 
-            String optionStr = opts.isEmpty() ? "" : opts.stream()
-                    .map(o -> o.getIngredient().getName() + "(" + o.getQuantity().intValue() + "개)")
-                    .collect(Collectors.joining(", "));
+            String optionStr = "";
+            if (!opts.isEmpty()) {
+                optionStr = opts.stream()
+                        .map(o -> o.getIngredient().getName() + " (" + o.getQuantity().intValue() + "개)")
+                        .collect(Collectors.joining(", "));
+                if (optionStr.length() > 25) {
+                    optionStr = optionStr.substring(0, 25) + "···";
+                }
+            }
 
             items.add(OrderItemDto.builder()
                     .dishName(oi.getDish().getName())

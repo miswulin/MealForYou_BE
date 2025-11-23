@@ -168,13 +168,20 @@ public class CartService {
         cartItemRepository.save(cartItem);
     }
 
-    // 옵션 문자열 생성기 (UI 표시용)
+    // 옵션 문자열 생성기
     private String makeOptionString(List<CartItemIngredient> list) {
         if (list.isEmpty()) return "";
 
-        return list.stream()
-                .map(i -> i.getIngredient().getName() + "(" + i.getQuantity().intValue() + "개)")
+        String joined = list.stream()
+                .map(i -> i.getIngredient().getName() + " (" + i.getQuantity().intValue() + "개)")
                 .collect(Collectors.joining(", "));
+
+        // 25자 초과 시 생략
+        if (joined.length() > 25) {
+            joined = joined.substring(0, 25) + "···";
+        }
+
+        return joined;
     }
 
     private String formatPrice(int price) {
