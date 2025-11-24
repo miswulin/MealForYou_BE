@@ -145,6 +145,20 @@ public class AuthService {
         refreshTokenRepository.delete(email);
     }
 
+    // 회원 탈퇴
+    @Transactional
+    public void deleteAccount(String email) {
+        // 이메일로 회원 조회
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+
+        // Redis에서 Refresh Token 삭제
+        refreshTokenRepository.delete(email);
+
+        // DB에서 회원 삭제
+        memberRepository.delete(member);
+    }
+
     public String extractEmail(String refreshToken) {
         return jwtProvider.getEmail(refreshToken);
     }

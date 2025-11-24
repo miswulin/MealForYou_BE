@@ -12,6 +12,7 @@ import store.mealforyou.dto.*;
 import store.mealforyou.security.MemberDetails;
 import store.mealforyou.service.AuthService;
 import store.mealforyou.service.EmailAuthService;
+import store.mealforyou.service.PasswordService;
 
 @RestController
 @RequiredArgsConstructor
@@ -92,5 +93,15 @@ public class AuthController {
         // 이메일 + Refresh 토큰을 함께 검증+처리
         authService.logout(email, request.refreshToken()); // Redis에서 refresh:{email} 삭제
         return ResponseEntity.ok("로그아웃되었습니다.");
+    }
+
+    // 회원 탈퇴
+    @PostMapping("/delete")
+    public ResponseEntity<?> deleteAccount(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        String email = memberDetails.email();
+        authService.deleteAccount(email);
+        return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
     }
 }
