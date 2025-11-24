@@ -5,8 +5,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import store.mealforyou.dto.*;
+import store.mealforyou.security.MemberDetails;
 import store.mealforyou.service.AuthService;
 import store.mealforyou.service.EmailAuthService;
 
@@ -70,20 +73,24 @@ public class AuthController {
             summary = "Access Token 재발급",
             description = "유효한 Refresh Token을 이용하여 새 Access Token과 새 Refresh Token을 발급합니다."
     )
-    public ResponseEntity<TokenResponse> refresh(@RequestParam String refreshToken) {
-        TokenResponse tokens = authService.refresh(refreshToken);
-        return ResponseEntity.ok(tokens);
+    public TokenResponse refresh(@RequestBody @Validated RefreshRequest request) {
+        return authService.refresh(request);
     }
 
     // 로그아웃 (refreshToken 하나만 보내면 되고, refreshToken 내부 email 추출 후 Redis에서 제거함)
     @PostMapping("/logout")
     @Operation(
             summary = "로그아웃",
-            description = "클라이언트가 보유한 Refresh Token에서 이메일을 추출하고, Redis에 저장된 해당 사용자의 Refresh Token을 삭제하여 재발급을 차단합니다."
+            description = "현재 로그인한 사용자의 Refresh Token을 Redies 서버에서 삭제하여 재발급을 차단합니다."
     )
-    public ResponseEntity<?> logout(@RequestParam String refreshToken) {
-        String email = authService.extractEmail(refreshToken);
-        authService.logout(email);
+    public ResponseEntity<?> logout(@AuthenticationPrincipal MemberDetails memberDetails,
+                                    @RequestBody LogoutRequest request
+    ) {
+        // SecurityContext에서 꺼낸 이메일
+        String email = memberDetails.email();
+
+        // 이메일 + Refresh 토큰을 함께 검증+처리
+        authService.logout(email, request.refreshToken()); // Redis에서 refresh:{email} 삭제
         return ResponseEntity.ok("로그아웃되었습니다.");
     }
 }

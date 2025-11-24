@@ -63,7 +63,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/signup").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/refresh").permitAll()
-                        .requestMatchers("/api/auth/logout").permitAll()
                         .requestMatchers("/api/auth/email/**").permitAll()
 
                         // /api/dis hes/ 로 시작하는 모든 경로는 인증 없이 허용
@@ -81,6 +80,9 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/swagger-ui/**"
                         ).permitAll()
+
+                        // 로그아웃은 토큰이 있는 사용자만 호출 가능
+                        .requestMatchers("/api/auth/logout").authenticated()
 
                         // 그 외 모든 요청은 인증 필요
                         .anyRequest().authenticated()

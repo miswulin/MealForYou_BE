@@ -71,7 +71,7 @@ public class JwtProvider {
     // 토큰에서 사용자 이메일 추출
     public String getEmail(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build()
-                .parseClaimsJws(token).getBody().getSubject();
+                .parseClaimsJws(token).getBody().getSubject(); // 서명 검증
     }
 
     // JWT로 인증 객체 생성
