@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import store.mealforyou.dto.LoginRequest;
+import store.mealforyou.dto.RefreshRequest;
 import store.mealforyou.dto.SignupRequest;
 import store.mealforyou.dto.TokenResponse;
 import store.mealforyou.entity.Member;
@@ -97,7 +98,10 @@ public class AuthService {
 
     // 리프레시(재발급)
     @Transactional
-    public TokenResponse refresh(String clientRefreshToken) {
+    public TokenResponse refresh(RefreshRequest request) {
+
+        String clientRefreshToken = request.refreshToken();
+
         // refreshToken에서 email 추출
         String email = jwtProvider.getEmail(clientRefreshToken);
 

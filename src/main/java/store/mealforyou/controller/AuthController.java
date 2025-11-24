@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import store.mealforyou.dto.*;
 import store.mealforyou.service.AuthService;
@@ -70,9 +71,8 @@ public class AuthController {
             summary = "Access Token 재발급",
             description = "유효한 Refresh Token을 이용하여 새 Access Token과 새 Refresh Token을 발급합니다."
     )
-    public ResponseEntity<TokenResponse> refresh(@RequestParam String refreshToken) {
-        TokenResponse tokens = authService.refresh(refreshToken);
-        return ResponseEntity.ok(tokens);
+    public TokenResponse refresh(@RequestBody @Validated RefreshRequest request) {
+        return authService.refresh(request);
     }
 
     // 로그아웃 (refreshToken 하나만 보내면 되고, refreshToken 내부 email 추출 후 Redis에서 제거함)
