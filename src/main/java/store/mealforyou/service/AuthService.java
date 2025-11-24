@@ -1,5 +1,6 @@
 package store.mealforyou.service;
 
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -103,7 +104,14 @@ public class AuthService {
         String clientRefreshToken = request.refreshToken();
 
         // refreshToken에서 email 추출
-        String email = jwtProvider.getEmail(clientRefreshToken);
+        String email;
+        try {
+            // 토큰이 진짜 JWT인지, 서명이 올바른지 검증 & 이메일 추출
+            email = jwtProvider.getEmail(clientRefreshToken);
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new IllegalStateException("유효하지 않은 리프레시 토큰입니다.");
+        }
+
 
         // Redis에 저장된 refreshToken과 비교
         String saved = refreshTokenRepository.find(email);
@@ -123,7 +131,16 @@ public class AuthService {
 
     // 로그아웃
     @Transactional
-    public void logout(String email) {
+    public void logout(String email, String refreshToken) {
+
+        // 토큰에서 이메일 추출
+        String tokenEmail = jwtProvider.getEmail(refreshToken);
+
+        // Access 토큰에서 꺼낸 이메일과 Refresh 토큰 속 이메일이 다르면 위조 가능성이므로 예외처리
+        if(!tokenEmail.equals(email)) {
+            throw new IllegalStateException("토큰 정보가 일치하지 않습니다.");
+        }
+
         // 허용리스트에서 삭제 -> 즉시 무효화 (문자열 키 제거)
         refreshTokenRepository.delete(email);
     }

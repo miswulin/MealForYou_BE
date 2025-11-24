@@ -1,20 +1,43 @@
 package store.mealforyou.exception;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Objects;
 
+// 전역 예외처리 클래스
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    // DTO 유효성 검사 실패
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleValidationErrors(MethodArgumentNotValidException e) {
+        // 첫 번째 fieldError의 defaultMessage 가져오기
+        String message = e.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .findFirst()
+                .map(error -> error.getDefaultMessage())
+                .orElse("올바르지 않은 요청입니다.");
 
-    // 잘못된 요청 (입력값 오류, 인증코드 불일치 등)
+        Map<String, Object> body = new HashMap<>();
+        body.put("status" , 400);
+        body.put("error", "Bad Request");
+        body.put("message", message);
+
+        return ResponseEntity.badRequest().body(body);
+    }
+
+
+    // 잘못된 요청 (비밀번호 불일치, 중복 이메일 등)
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> handleBadRequest(IllegalArgumentException e) {
         return ResponseEntity
@@ -28,6 +51,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(e.getMessage());
+    }
+
+    // JWT 자체가 위조/손상/형식 오류인 경우
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<?> handleJwtError(JwtException e) {
+        // 내부 메시지는 클라이언트에게 노출 X
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body("유효하지 않은 토큰입니다.");
     }
 
     // 로그인 실패 (아이디 없거나 비밀번호 틀림)
