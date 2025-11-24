@@ -67,7 +67,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/email/**").permitAll()
 
                         // /api/dis hes/ 로 시작하는 모든 경로는 인증 없이 허용
-                        .requestMatchers("/dishes/**").permitAll()
+                        .requestMatchers("/api/dishes/**").permitAll()
 
                         // H2 콘솔 접근 허용 (개발용)
                         .requestMatchers("/h2-console/**").permitAll()
