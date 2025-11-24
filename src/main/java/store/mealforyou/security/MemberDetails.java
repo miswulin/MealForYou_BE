@@ -14,6 +14,10 @@ public class MemberDetails implements UserDetails {
         this.member = member;
     }
 
+    public Member getMember() {
+        return this.member;
+    }
+
     public Long id() {
         return member.getId();
     }
