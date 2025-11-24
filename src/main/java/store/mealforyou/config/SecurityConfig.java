@@ -84,7 +84,10 @@ public class SecurityConfig {
 
                         // 로그아웃은 토큰이 있는 사용자만 호출 가능
                         .requestMatchers("/api/auth/logout").authenticated()
+                        // 비밀번호 변경도 인증 필요
                         .requestMatchers("/api/auth/password/change").authenticated()
+                        // 회원 탈퇴도 인증 필요
+                        .requestMatchers("api/auth/delete").authenticated()
 
                         // 그 외 모든 요청은 인증 필요
                         .anyRequest().authenticated()
