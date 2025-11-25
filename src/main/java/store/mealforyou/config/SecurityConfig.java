@@ -59,6 +59,11 @@ public class SecurityConfig {
 
                 // 경로별 인가(Authorization) 규칙
                 .authorizeHttpRequests(auth -> auth
+                        // 정적 리소스 & 헬스체크 허용
+                        .requestMatchers(
+                                "/", "/index.html", "/health"
+                        ).permitAll()
+
                         // 회원가입/로그인/토큰재발급/이메일 인증 관련 모두 허용
                         .requestMatchers("/api/auth/signup").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
