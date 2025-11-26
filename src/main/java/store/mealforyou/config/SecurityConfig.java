@@ -34,6 +34,19 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring()
+                .requestMatchers(
+                        "/v3/api-docs",
+                        "/v3/api-docs/**",
+                        "/swagger-ui.html",
+                        "/swagger-ui/",
+                        "/swagger-ui/**",
+                        "/swagger-resources/**"
+                );
+    }
+
     // CORS 설정 추가
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
