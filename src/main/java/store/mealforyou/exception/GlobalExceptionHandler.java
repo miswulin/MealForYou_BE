@@ -2,6 +2,8 @@ package store.mealforyou.exception;
 
 import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -15,6 +17,7 @@ import java.util.HashMap;
 import java.util.Objects;
 
 // 전역 예외처리 클래스
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     // DTO 유효성 검사 실패
@@ -72,11 +75,25 @@ public class GlobalExceptionHandler {
 
     // 기타 예상하지 못한 서버 오류
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleGeneral(Exception e) {
-        e.printStackTrace(); // 콘솔에 실제 오류 출력
+    public ResponseEntity<Map<String, Object>> handleException(Exception e, HttpServletRequest request)
+    throws Exception {
+
+        String uri = request.getRequestURI();
+
+        if (uri.startsWith("/v3/api-docs") || uri.startsWith("/swagger-ui")) {
+            throw e;
+        }
+
+        log.error("예상치 못한 예외 uri={}, msg={}", uri, e.getMessage(), e);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("status", 500);
+        body.put("error", "Internal Server Error");
+        body.put("message", "서버 내부 오류가 발생했습니다.");
+
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("서버 내부 오류가 발생했습니다: " + e.getMessage());
+                .body(body);
     }
 
     // EntityNotFoundException 발생 시 404 Not Found 응답을 반환
