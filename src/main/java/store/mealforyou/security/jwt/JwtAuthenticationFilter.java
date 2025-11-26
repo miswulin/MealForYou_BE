@@ -23,16 +23,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response, // 응답 객체
             FilterChain filterChain // 다음 필터들의 연쇄
     ) throws ServletException, IOException {
-//        String uri = request.getRequestURI();
-//
-//        // Swagger / OpenAPI 요청은 JWT 검사 완전히 건너뛰기
-//        if (uri.startsWith("/v3/api-docs")
-//                || uri.startsWith("/swagger-ui")
-//                || uri.equals("/swagger-ui.html")) {
-//            filterChain.doFilter(request, response);
-//            return;
-//        }
-
         // 요청 헤더에서 Access Token 추출
         String token = resolveToken(request);
 
