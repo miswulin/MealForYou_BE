@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: []self-hosted, Linux, X64]  # EC2 내부 runner
+    runs-on: [self-hosted, Linux, X64]  # EC2 내부 runner
 
     steps:
       - name: Checkout
