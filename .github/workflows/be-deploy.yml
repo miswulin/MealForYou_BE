@@ -23,6 +23,10 @@ jobs:
           chmod +x ./gradlew
           ./gradlew clean build -x test
 
+      - name: Prepare deployment directory
+        run: |
+          mkdir -p /home/ec2-user/MealForYou/build/libs
+
       - name: Copy JAR to deployment folder
         run: |
           cp build/libs/*.jar /home/ec2-user/MealForYou/build/libs/
