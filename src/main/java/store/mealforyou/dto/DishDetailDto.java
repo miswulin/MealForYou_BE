@@ -20,12 +20,6 @@ public class DishDetailDto {
     private int basePrice;
     private boolean isInterested;
 
-    // 유저의 건강 태그 이름 리스트
-    private List<String> userHealthTags;
-
-    // 사용자 맞춤 추천 옵션 리스트
-    private List<DishIngredientDto> recommendedIngredients;
-
     // 상세 정보 이미지만 담을 리스트
     private List<DishDetailImageDto> dishImages;
 
