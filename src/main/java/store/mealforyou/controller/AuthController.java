@@ -50,7 +50,19 @@ public class AuthController {
     @PostMapping("/signup")
     @Operation(
             summary = "회원가입",
-            description = "이메일 인증이 완료된 사용자가 가입을 위한 정보를 입력하여 회원가입을 수행합니다."
+            description =
+                    "이메일 인증이 완료된 사용자가 가입을 위한 정보를 입력하여 회원가입을 수행합니다.\n\n" +
+                            "- 필수 정보: 이메일, 이름, 비밀번호, 전화번호, 주소(선택)\n" +
+                            "- 건강 선호 식단(선택): 최대 3가지까지 선택 가능하며, " +
+                            "다음 ENUM 값을 사용합니다.\n" +
+                            "  * HIGH_PROTEIN (고단백)\n" +
+                            "  * LOW_CARB (저탄수)\n" +
+                            "  * GLUTEN_FREE (글루텐프리)\n" +
+                            "  * LOW_SODIUM (저염)\n" +
+                            "  * LOW_GLYCEMIC (저혈당)\n" +
+                            "  * VEGAN (비건)\n\n" +
+                            "요청 바디에서 healthTags 필드를 생략하거나 빈 배열([])로 보내면 " +
+                            "선호 식단을 선택하지 않은 것으로 처리됩니다."
     )
     public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest request) {
         Long id = authService.signup(request);

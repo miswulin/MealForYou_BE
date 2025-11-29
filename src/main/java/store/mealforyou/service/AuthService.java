@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import store.mealforyou.constant.ProductTag;
 import store.mealforyou.dto.LoginRequest;
 import store.mealforyou.dto.RefreshRequest;
 import store.mealforyou.dto.SignupRequest;
@@ -18,6 +19,9 @@ import store.mealforyou.repository.MemberRepository;
 import store.mealforyou.repository.RefreshTokenRepository;
 import store.mealforyou.security.jwt.JwtProvider;
 import store.mealforyou.util.PhoneNumberNormalizer;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -59,6 +63,13 @@ public class AuthService {
 
         // 주소 (null 가능)
         var address = dto.address() != null ? dto.address().toEmbeddable() : null;
+
+        // 건강 태그 처리
+        // null 또는 빈 리스트면 "선호 식단 없음"으로 간주 (건너뛰기 버튼)
+        Set<ProductTag> healthTags = new HashSet<>();
+        if (dto.healthTags() != null && !dto.healthTags().isEmpty()) {
+            healthTags.addAll(dto.healthTags());
+        }
 
         // 비밀번호 암호화
         Member member = Member.builder()
