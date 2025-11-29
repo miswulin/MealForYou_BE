@@ -64,7 +64,7 @@ public class AuthService {
         // 주소 (null 가능)
         var address = dto.address() != null ? dto.address().toEmbeddable() : null;
 
-        // 건강 태그 처리
+        // 선호 식단 태그 처리
         // null 또는 빈 리스트면 "선호 식단 없음"으로 간주 (건너뛰기 버튼)
         Set<ProductTag> healthTags = new HashSet<>();
         if (dto.healthTags() != null && !dto.healthTags().isEmpty()) {
