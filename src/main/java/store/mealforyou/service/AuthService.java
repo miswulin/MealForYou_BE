@@ -78,6 +78,7 @@ public class AuthService {
                 .password(passwordEncoder.encode(dto.password()))
                 .phoneE164(phoneE164)
                 .address(address)
+                .healthTags(healthTags)
                 .build();
 
         // 저장 후 기본키 반환
