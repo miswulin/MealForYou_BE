@@ -176,19 +176,18 @@ public class DishService {
 
     // 4.1.1 제품 소개
     public DishDetailDto getDishDetail(Long dishId) {
-        // Repository에서 dishId로 Dish 엔티티 조회
+        // Dish 엔티티 조회
         Dish dish = dishRepository.findByIdWithDetails(dishId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 메뉴를 찾을 수 없습니다. id=" + dishId));
 
-        // Dish -> DishDetailDto 변환
-        // dishImages 리스트에서 ImageType이 DETAIL_INFO 인 것만 필터링
+        // 이미지 변환
         List<DishDetailImageDto> imageDtos = dish.getDishImages().stream()
                 .filter(image -> image.getImageType() == ImageType.DETAIL_INFO)
                 .map(image -> new DishDetailImageDto(image.getId(), image.getPath()))
                 .collect(Collectors.toList());
 
-        // Dish의 기본 구성 재료 DTO로 변환
-        List<DishIngredientDto> basicIngredients = dish.getDishIngredients().stream()
+        // 재료 리스트 생성
+        List<DishIngredientDto> allIngredients = dish.getDishIngredients().stream()
                 .map(dishIngredient -> {
                     Ingredient ingredient = dishIngredient.getIngredient();
                     return new DishIngredientDto(
@@ -202,29 +201,13 @@ public class DishService {
                 })
                 .collect(Collectors.toList());
 
-        // 이 요리에 적용 가능한 추가 옵션(ADDITIONAL_OPTION) DTO로 변환
-        List<DishIngredientDto> additionalOptions = ingredientRepository
-                .findByProductCategory(ProductCategory.ADDITIONAL_OPTION).stream()
-                .map(ingredient -> new DishIngredientDto(
-                        ingredient.getId(),
-                        ingredient.getName(),
-                        ingredient.getUnitCost(),
-                        0,
-                        ingredient.getProductCategory(),
-                        ingredient.getProductTag()
-                ))
-                .collect(Collectors.toList());
-
-        // 기본 구성 재료와 추가 옵션 재료를 합친 후, 카테고리별로 그룹핑
-        List<DishIngredientDto> allIngredients = new ArrayList<>();
-        allIngredients.addAll(basicIngredients);
-        allIngredients.addAll(additionalOptions);
+        // 카테고리별 그룹핑
         Map<ProductCategory, List<DishIngredientDto>> ingredientsByCategory = allIngredients.stream()
                 .collect(Collectors.groupingBy(DishIngredientDto::getCategory));
 
         // 추천 옵션 필터링
         Member currentMember = getCurrentMember();
-        List<ProductTag> userTags = getUserHealthTags(currentMember); // Member 객체 전달
+        List<ProductTag> userTags = getUserHealthTags(currentMember);
 
         List<String> userHealthTags = userTags.stream()
                 .map(ProductTag::getDescription)
@@ -241,7 +224,7 @@ public class DishService {
             isInterested = interestRepository.existsByDishIdAndMemberAndStatus(dishId, currentMember, InterestStatus.ACTIVE);
         }
 
-        // 최종 DTO 반환
+        // 최종 반환
         return new DishDetailDto(
                 dish.getId(),
                 dish.getName(),
