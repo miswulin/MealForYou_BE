@@ -3,13 +3,17 @@ package store.mealforyou.service;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import store.mealforyou.constant.ImageType;
 import store.mealforyou.constant.ProductCategory;
+import store.mealforyou.constant.ProductTag;
 import store.mealforyou.dto.*;
 import store.mealforyou.entity.Dish;
 import store.mealforyou.entity.Ingredient;
 import store.mealforyou.entity.Interest;
+import store.mealforyou.entity.Member;
 import store.mealforyou.repository.IngredientRepository;
 import store.mealforyou.repository.DishRepository;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import store.mealforyou.constant.InterestStatus;
 import store.mealforyou.repository.InterestRepository;
+import store.mealforyou.repository.MemberRepository;
 
 import java.time.ZonedDateTime;
 import java.util.Comparator;
@@ -33,17 +38,33 @@ public class DishService {
     private final DishRepository dishRepository;
     private final IngredientRepository ingredientRepository;
     private final InterestRepository interestRepository;
-
+    private final MemberRepository memberRepository;
 
     // 현재 로그인한 회원의 ID를 반환하는 메서드
-    // 추후 SecurityContextHolder나 JWT 사용해서 실제 ID 반환하도록 수정 필요
     // return값: 로그인된 회원 ID, 비로그인시 null
-    private Long getCurrentMemberId() {
+    private Member getCurrentMember() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        // TODO: 현재 로그인 회원 ID 가져오는 로직 구현
+        // 인증 정보가 없거나 비로그인인 경우 null
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
+            return null;
+        }
 
-//        return null; // 가정: 비로그인
-         return 1L; // 테스트: ID 1 회원으로 로그인된 상태
+        // 인증된 사용자의 이메일(username) 가져오기
+        String email = authentication.getName();
+
+        // 이메일로 회원 조회
+        return memberRepository.findByEmail(email).orElse(null);
+    }
+
+    // 유저의 건강 태그 정보 가져오기 (Member 엔티티에서 조회)
+    // TODO: 현재 Member 엔티티에는 태그 정보가 없으므로 임시 로직 (추후 Member에 필드 추가 시 수정 필요)
+    private List<ProductTag> getUserHealthTags(Member member) {
+        if (member == null) {
+            return List.of();
+        }
+        // 나중에 member.getHealthTags() 등으로 교체
+        return List.of(ProductTag.LOW_SODIUM, ProductTag.HIGH_PROTEIN);
     }
 
     // 3.1.1. 전체메뉴 조회
@@ -76,12 +97,12 @@ public class DishService {
         }
 
         // 현재 로그인 유저의 관심상품 목록 조회
-        Long currentMemberId = getCurrentMemberId();
+        Member currentMember = getCurrentMember();
         List<Long> likedDishIds;
-        if (currentMemberId != null) {
-            likedDishIds = interestRepository.findDishIdsByMemberIdAndStatus(currentMemberId, InterestStatus.ACTIVE);
+        if (currentMember != null) {
+            likedDishIds = interestRepository.findDishIdsByMemberAndStatus(currentMember, InterestStatus.ACTIVE);
         } else {
-            likedDishIds = List.of(); // 빈 리스트
+            likedDishIds = List.of();
         }
 
         return dishes.stream()
@@ -97,14 +118,11 @@ public class DishService {
 
     // 3.1.1. 홈 화면 큐레이션
     public MainPageDishesDto getMainPageDishes() {
-
-        // 로그인 유저 ID 및 관심상품 목록 조회
-        Long currentMemberId = getCurrentMemberId();
-        List<Long> likedDishIds = (currentMemberId != null)
-                ? interestRepository.findDishIdsByMemberIdAndStatus(currentMemberId, InterestStatus.ACTIVE)
+        Member currentMember = getCurrentMember();
+        List<Long> likedDishIds = (currentMember != null)
+                ? interestRepository.findDishIdsByMemberAndStatus(currentMember, InterestStatus.ACTIVE)
                 : List.of();
 
-        // 공통 변환 로직 (Dish -> DishFormDto + isInterested)
         java.util.function.Function<Dish, DishFormDto> convertToDto = dish -> {
             DishFormDto dto = DishFormDto.of(dish);
             if (likedDishIds.contains(dish.getId())) {
@@ -141,11 +159,10 @@ public class DishService {
     public List<DishFormDto> searchDishes(String keyword) {
         List<Dish> dishes = dishRepository.findByNameContainingWithDishImages(keyword);
 
-
         // 관심 여부 처리
-        Long currentMemberId = getCurrentMemberId();
-        List<Long> likedDishIds = (currentMemberId != null)
-                ? interestRepository.findDishIdsByMemberIdAndStatus(currentMemberId, InterestStatus.ACTIVE)
+        Member currentMember = getCurrentMember();
+        List<Long> likedDishIds = (currentMember != null)
+                ? interestRepository.findDishIdsByMemberAndStatus(currentMember, InterestStatus.ACTIVE)
                 : List.of();
 
         return dishes.stream()
@@ -168,44 +185,62 @@ public class DishService {
         // Dish -> DishDetailDto 변환
         // dishImages 리스트에서 ImageType이 DETAIL_INFO 인 것만 필터링
         List<DishDetailImageDto> imageDtos = dish.getDishImages().stream()
-                .filter(image -> image.getImageType() == ImageType.DETAIL_INFO) // DETAIL_INFO 타입 필터링
-                .map(image -> new DishDetailImageDto(image.getId(), image.getPath())) // DishImage의 path 사용
+                .filter(image -> image.getImageType() == ImageType.DETAIL_INFO)
+                .map(image -> new DishDetailImageDto(image.getId(), image.getPath()))
                 .collect(Collectors.toList());
 
         // Dish의 기본 구성 재료 DTO로 변환
-        Stream<DishIngredientDto> basicIngredientsStream = dish.getDishIngredients().stream()
+        List<DishIngredientDto> basicIngredients = dish.getDishIngredients().stream()
                 .map(dishIngredient -> {
-                    Ingredient ingredient = dishIngredient.getIngredient(); // 연결된 Ingredient 엔티티
+                    Ingredient ingredient = dishIngredient.getIngredient();
                     return new DishIngredientDto(
-                            ingredient.getId(), // DTO의 ID는 Ingredient의 ID 사용
+                            ingredient.getId(),
                             ingredient.getName(),
-                            ingredient.getUnitCost(), // Ingredient의 unitCost를 price로 사용
-                            dishIngredient.getQuantity(), // DishIngredient의 기본 수량
-                            ingredient.getProductCategory()
+                            ingredient.getUnitCost(),
+                            dishIngredient.getQuantity(),
+                            ingredient.getProductCategory(),
+                            ingredient.getProductTag()
                     );
-                });
+                })
+                .collect(Collectors.toList());
 
         // 이 요리에 적용 가능한 추가 옵션(ADDITIONAL_OPTION) DTO로 변환
-        Stream<DishIngredientDto> additionalOptionsStream = ingredientRepository
+        List<DishIngredientDto> additionalOptions = ingredientRepository
                 .findByProductCategory(ProductCategory.ADDITIONAL_OPTION).stream()
                 .map(ingredient -> new DishIngredientDto(
                         ingredient.getId(),
                         ingredient.getName(),
                         ingredient.getUnitCost(),
-                        0, // '추가 옵션'은 기본 수량을 0으로 설정
-                        ingredient.getProductCategory()
-                ));
+                        0,
+                        ingredient.getProductCategory(),
+                        ingredient.getProductTag()
+                ))
+                .collect(Collectors.toList());
 
         // 기본 구성 재료와 추가 옵션 재료를 합친 후, 카테고리별로 그룹핑
-        Map<ProductCategory, List<DishIngredientDto>> ingredientsByCategory =
-                Stream.concat(basicIngredientsStream, additionalOptionsStream)
-                        .collect(Collectors.groupingBy(DishIngredientDto::getCategory));
+        List<DishIngredientDto> allIngredients = new ArrayList<>();
+        allIngredients.addAll(basicIngredients);
+        allIngredients.addAll(additionalOptions);
+        Map<ProductCategory, List<DishIngredientDto>> ingredientsByCategory = allIngredients.stream()
+                .collect(Collectors.groupingBy(DishIngredientDto::getCategory));
+
+        // 추천 옵션 필터링
+        Member currentMember = getCurrentMember();
+        List<ProductTag> userTags = getUserHealthTags(currentMember); // Member 객체 전달
+
+        List<String> userHealthTags = userTags.stream()
+                .map(ProductTag::getDescription)
+                .collect(Collectors.toList());
+
+        List<DishIngredientDto> recommendedIngredients = allIngredients.stream()
+                .filter(dto -> dto.getProductTag() != null)
+                .filter(dto -> userTags.contains(dto.getProductTag()))
+                .collect(Collectors.toList());
 
         // 관심상품 여부 확인
         boolean isInterested = false;
-        Long currentMemberId = getCurrentMemberId();
-        if (currentMemberId != null) {
-            isInterested = interestRepository.existsByDishIdAndMemberIdAndStatus(dishId, currentMemberId, InterestStatus.ACTIVE);
+        if (currentMember != null) {
+            isInterested = interestRepository.existsByDishIdAndMemberAndStatus(dishId, currentMember, InterestStatus.ACTIVE);
         }
 
         // 최종 DTO 반환
@@ -214,6 +249,8 @@ public class DishService {
                 dish.getName(),
                 dish.getBasePrice(),
                 isInterested,
+                userHealthTags,
+                recommendedIngredients,
                 imageDtos,
                 ingredientsByCategory
         );
@@ -221,16 +258,15 @@ public class DishService {
 
     // 8.1 관심 상품 등록/해제
     public boolean toggleInterest(Long dishId) {
-        Long currentMemberId = getCurrentMemberId();
+        Member currentMember = getCurrentMember();
 
         // 로그인 여부 확인
-        if (currentMemberId == null) {
-            throw new IllegalStateException("로그인이 필요한 서비스입니다."); // 비로그인 오류 발생
+        if (currentMember == null) {
+            throw new IllegalStateException("로그인이 필요한 서비스입니다.");
         }
 
         // 기존 관심 내역 조회
-        Interest interest = interestRepository.findByDishIdAndMemberId(dishId, currentMemberId)
-                .orElse(null);
+        Interest interest = interestRepository.findByDishIdAndMember(dishId, currentMember).orElse(null);
 
         if (interest == null) {
             // 관심 설정 내역이 없으면 새로 생성 (ACTIVE)
@@ -239,7 +275,7 @@ public class DishService {
 
             Interest newInterest = new Interest();
             newInterest.setDish(dish);
-            newInterest.setMemberId(currentMemberId);
+            newInterest.setMember(currentMember);
             newInterest.setStatus(InterestStatus.ACTIVE);
             newInterest.setRegisteredAt(ZonedDateTime.now());
 
@@ -260,13 +296,13 @@ public class DishService {
 
     // 8.1.1 관심상품 목록 표시: 최근 추가순 정렬
     public List<DishFormDto> getMyInterests() {
-        Long currentMemberId = getCurrentMemberId();
-        if (currentMemberId == null) {
+        Member currentMember = getCurrentMember();
+        if (currentMember == null) {
             throw new IllegalStateException("로그인이 필요한 서비스입니다.");
         }
 
         // 관심상품 최신순 조회
-        List<Interest> interests = interestRepository.findMyActiveInterests(currentMemberId);
+        List<Interest> interests = interestRepository.findMyActiveInterests(currentMember);
 
         // Interest -> DishFormDto 변환
         return interests.stream()
@@ -281,8 +317,8 @@ public class DishService {
 
     // 8.1.2 관심상품 해제
     public void deleteInterests(List<Long> dishIds) {
-        Long currentMemberId = getCurrentMemberId();
-        if (currentMemberId == null) {
+        Member currentMember = getCurrentMember();
+        if (currentMember == null) {
             throw new IllegalStateException("로그인이 필요한 서비스입니다.");
         }
 
@@ -291,6 +327,6 @@ public class DishService {
         }
 
         // Bulk Update 쿼리 실행
-        interestRepository.bulkDeleteInterests(currentMemberId, dishIds);
+        interestRepository.bulkDeleteInterests(currentMember, dishIds);
     }
 }
