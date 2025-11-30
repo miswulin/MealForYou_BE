@@ -57,14 +57,12 @@ public class DishService {
         return memberRepository.findByEmail(email).orElse(null);
     }
 
-    // 유저의 건강 태그 정보 가져오기 (Member 엔티티에서 조회)
-    // TODO: 현재 Member 엔티티에는 태그 정보가 없으므로 임시 로직 (추후 Member에 필드 추가 시 수정 필요)
+    // 유저의 건강 태그 정보 가져오기
     private List<ProductTag> getUserHealthTags(Member member) {
         if (member == null) {
-            return List.of();
+            return List.of(); // 비로그인 시 빈 리스트 반환
         }
-        // 나중에 member.getHealthTags() 등으로 교체
-        return List.of(ProductTag.LOW_SODIUM, ProductTag.HIGH_PROTEIN);
+        return new ArrayList<>(member.getHealthTags());
     }
 
     // 3.1.1. 전체메뉴 조회
