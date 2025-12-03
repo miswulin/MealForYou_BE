@@ -109,6 +109,10 @@ public class AuthController {
 
     // 회원 탈퇴
     @PostMapping("/delete")
+    @Operation(
+            summary = "회원탈퇴",
+            description = "현재 로그인한 사용자의 계정 정보를 삭제합니다."
+    )
     public ResponseEntity<?> deleteAccount(
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {

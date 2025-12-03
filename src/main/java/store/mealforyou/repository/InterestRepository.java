@@ -13,6 +13,11 @@ import java.util.Optional;
 
 public interface InterestRepository extends JpaRepository<Interest, Long> {
 
+    // 회원 탈퇴 시, 해당 회원의 관심상품 전체 삭제
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE FROM Interest i WHERE i.member = :member")
+    void deleteByMember(@Param("member") Member member);
+
     // 목록 조회: 해당 유저가 찜한 모든 요리의 ID를 조회
     @Query("SELECT i.dish.id FROM Interest i WHERE i.member = :member AND i.status = :status")
     List<Long> findDishIdsByMemberAndStatus(@Param("member") Member member, @Param("status") InterestStatus status);

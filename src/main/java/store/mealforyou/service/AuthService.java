@@ -15,6 +15,7 @@ import store.mealforyou.dto.SignupRequest;
 import store.mealforyou.dto.TokenResponse;
 import store.mealforyou.entity.Member;
 import store.mealforyou.repository.EmailAuthRepository;
+import store.mealforyou.repository.InterestRepository;
 import store.mealforyou.repository.MemberRepository;
 import store.mealforyou.repository.RefreshTokenRepository;
 import store.mealforyou.security.jwt.JwtProvider;
@@ -36,6 +37,8 @@ public class AuthService {
     private final JwtProvider jwtProvider; // JWT 발급/검증/파싱
     private final AuthenticationManager authenticationManager; // 시큐리티 표준 인증 엔진
     private final EmailAuthRepository emailAuthRepository;
+
+    private final MemberDeletionService memberDeletionService;
 
     // 회원가입
     @Transactional
@@ -164,11 +167,8 @@ public class AuthService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
 
-        // Redis에서 Refresh Token 삭제
-        refreshTokenRepository.delete(email);
-
-        // DB에서 회원 삭제
-        memberRepository.delete(member);
+        // 실제 정리 + 삭제는 전용 서비스 클래스에 위임
+        memberDeletionService.deleteMemberWithRelations(member);
     }
 
     public String extractEmail(String refreshToken) {

@@ -8,5 +8,8 @@ public enum OrderStatus {
     SHIPPING,
 
     // 배송 완료
-    DELIVERED;
+    DELIVERED,
+
+    // 회원 탈퇴로 인해 유효하지 않은 주문
+    DELETED;
 }

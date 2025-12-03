@@ -18,7 +18,8 @@ public class Order {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
+    // 기존: nullable = false -> 회원이 탈퇴되면 null로 만ㄷ르 수 있도록 true로 변경함
+    @JoinColumn(name = "member_id", nullable = true)
     private Member member;
 
     @Embedded
