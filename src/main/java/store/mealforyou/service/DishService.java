@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import store.mealforyou.entity.DishImage;
 import store.mealforyou.constant.ImageType;
 import store.mealforyou.constant.ProductCategory;
 import store.mealforyou.constant.ProductTag;
@@ -60,9 +61,23 @@ public class DishService {
     // 유저의 건강 태그 정보 가져오기
     private List<ProductTag> getUserHealthTags(Member member) {
         if (member == null) {
-            return List.of(); // 비로그인 시 빈 리스트 반환
+            return new ArrayList<>(); // 회원이 없으면 빈 리스트 반환
         }
+
         return new ArrayList<>(member.getHealthTags());
+    }
+
+    // 이미지가 안 뜨는 문제 해결을 위한 헬퍼 메서드 추가
+    // DTO가 이미지를 못 찾을 경우 서비스에서 강제로 찾아주는 역할
+    private String findMainImageUrl(Dish dish) {
+        if (dish.getDishImages() == null || dish.getDishImages().isEmpty()) {
+            return "";
+        }
+        return dish.getDishImages().stream()
+                .filter(img -> img.getImageType() == ImageType.REPRESENTATIVE)
+                .findFirst()
+                .map(DishImage::getPath)
+                .orElse(dish.getDishImages().iterator().next().getPath());
     }
 
     // 3.1.1. 전체메뉴 조회
@@ -106,6 +121,9 @@ public class DishService {
         return dishes.stream()
                 .map(dish -> {
                     DishFormDto dto = DishFormDto.of(dish);
+                    if (dto.getImageUrl() == null || dto.getImageUrl().isEmpty()) {
+                        dto.setImageUrl(findMainImageUrl(dish));
+                    }
                     if (likedDishIds.contains(dish.getId())) {
                         dto.setInterested(true);
                     }
@@ -123,6 +141,9 @@ public class DishService {
 
         java.util.function.Function<Dish, DishFormDto> convertToDto = dish -> {
             DishFormDto dto = DishFormDto.of(dish);
+            if (dto.getImageUrl() == null || dto.getImageUrl().isEmpty()) {
+                dto.setImageUrl(findMainImageUrl(dish));
+            }
             if (likedDishIds.contains(dish.getId())) {
                 dto.setInterested(true);
             }
@@ -166,6 +187,9 @@ public class DishService {
         return dishes.stream()
                 .map(dish -> {
                     DishFormDto dto = DishFormDto.of(dish);
+                    if (dto.getImageUrl() == null || dto.getImageUrl().isEmpty()) {
+                        dto.setImageUrl(findMainImageUrl(dish));
+                    }
                     if (likedDishIds.contains(dish.getId())) {
                         dto.setInterested(true);
                     }
@@ -182,7 +206,8 @@ public class DishService {
 
         // 이미지 변환
         List<DishDetailImageDto> imageDtos = dish.getDishImages().stream()
-                .filter(image -> image.getImageType() == ImageType.DETAIL_INFO)
+                .filter(image -> image.getImageType() == ImageType.DETAIL_INFO || image.getImageType() == ImageType.REPRESENTATIVE)
+                .sorted(Comparator.comparing(DishImage::getImageType)) // 대표 이미지가 먼저 오게 하거나 순서대로 정렬
                 .map(image -> new DishDetailImageDto(image.getId(), image.getPath()))
                 .collect(Collectors.toList());
 
@@ -290,6 +315,9 @@ public class DishService {
                 .map(interest -> {
                     Dish dish = interest.getDish();
                     DishFormDto dto = DishFormDto.of(dish);
+                    if (dto.getImageUrl() == null || dto.getImageUrl().isEmpty()) {
+                        dto.setImageUrl(findMainImageUrl(dish));
+                    }
                     dto.setInterested(true);
                     return dto;
                 })
