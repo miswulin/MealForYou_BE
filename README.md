@@ -67,7 +67,7 @@ MealForYou
 ```
 ---
 ## 🏛 Domain Overview (주요 도메인)
-- Member : 회원 정보, 비밀번호, 연락처, 선호 태그 등
+- Member : 회원 정보, 비밀번호, 연락처, 선호 식단 태그 등
 - Dish / Ingredient / DishIngredient : 밀키트 메뉴, 재료 구성, 이미지 등
 - Cart / CartItem / CartItemIngredient : 장바구니 및 옵션/재료 선택
 - Order / OrderItem / OrderItemIngredient : 주문 및 주문 상세, 재료 기반 수량/금액 계산
