@@ -1,0 +1,167 @@
+﻿{
+    "dishId":  1,
+    "dishName":  "ìëë¶ ì°ê°",
+    "basePrice":  7700,
+    "userHealthTags":  [
+
+                       ],
+    "recommendedIngredients":  [
+
+                               ],
+    "dishImages":  [
+
+                   ],
+    "ingredientsByCategory":  {
+                                  "SOURCE":  [
+                                                 {
+                                                     "dishIngredientId":  3,
+                                                     "name":  "ì½ê°ë§¤ì´ë§",
+                                                     "price":  1000,
+                                                     "quantity":  0,
+                                                     "category":  "SOURCE",
+                                                     "productTag":  null
+                                                 },
+                                                 {
+                                                     "dishIngredientId":  6,
+                                                     "name":  "ê°íë§¤ì´ë§",
+                                                     "price":  1000,
+                                                     "quantity":  0,
+                                                     "category":  "SOURCE",
+                                                     "productTag":  null
+                                                 },
+                                                 {
+                                                     "dishIngredientId":  5,
+                                                     "name":  "ë§¤ì´ë§",
+                                                     "price":  1000,
+                                                     "quantity":  0,
+                                                     "category":  "SOURCE",
+                                                     "productTag":  null
+                                                 },
+                                                 {
+                                                     "dishIngredientId":  1,
+                                                     "name":  "ìíë§",
+                                                     "price":  1000,
+                                                     "quantity":  1,
+                                                     "category":  "SOURCE",
+                                                     "productTag":  null
+                                                 },
+                                                 {
+                                                     "dishIngredientId":  4,
+                                                     "name":  "ì ì¼ ì½ê°ë§¤ì´ë§",
+                                                     "price":  1000,
+                                                     "quantity":  0,
+                                                     "category":  "SOURCE",
+                                                     "productTag":  "LOW_SODIUM"
+                                                 },
+                                                 {
+                                                     "dishIngredientId":  2,
+                                                     "name":  "ì ì¼ ìíë§",
+                                                     "price":  1000,
+                                                     "quantity":  0,
+                                                     "category":  "SOURCE",
+                                                     "productTag":  "LOW_SODIUM"
+                                                 }
+                                             ],
+                                  "ADDITIONAL_OPTION":  [
+                                                            {
+                                                                "dishIngredientId":  18,
+                                                                "name":  "ì¥ê° 30g",
+                                                                "price":  700,
+                                                                "quantity":  0,
+                                                                "category":  "ADDITIONAL_OPTION",
+                                                                "productTag":  "LOW_GLYCEMIC"
+                                                            },
+                                                            {
+                                                                "dishIngredientId":  13,
+                                                                "name":  "í´ë¬¼ë¯¹ì¤(íí©, ìì°, ë°ì§ë½ì´, ì¤ì§ì´) 100g",
+                                                                "price":  1500,
+                                                                "quantity":  0,
+                                                                "category":  "ADDITIONAL_OPTION",
+                                                                "productTag":  "HIGH_PROTEIN"
+                                                            },
+                                                            {
+                                                                "dishIngredientId":  15,
+                                                                "name":  "ë¼ì§ê³ ê¸° ë¤ì§ì¡(50g)",
+                                                                "price":  1800,
+                                                                "quantity":  0,
+                                                                "category":  "ADDITIONAL_OPTION",
+                                                                "productTag":  "HIGH_PROTEIN"
+                                                            },
+                                                            {
+                                                                "dishIngredientId":  14,
+                                                                "name":  "í°ë¤ë¦¬ ìì°(4ë¯¸)",
+                                                                "price":  2000,
+                                                                "quantity":  0,
+                                                                "category":  "ADDITIONAL_OPTION",
+                                                                "productTag":  "HIGH_PROTEIN"
+                                                            },
+                                                            {
+                                                                "dishIngredientId":  17,
+                                                                "name":  "ì²­ìê³ ì¶ 3ê°",
+                                                                "price":  500,
+                                                                "quantity":  0,
+                                                                "category":  "ADDITIONAL_OPTION",
+                                                                "productTag":  "LOW_CARB"
+                                                            },
+                                                            {
+                                                                "dishIngredientId":  16,
+                                                                "name":  "ëíë¦¬ ë²ì¯ 1ë¬¶ì",
+                                                                "price":  600,
+                                                                "quantity":  0,
+                                                                "category":  "ADDITIONAL_OPTION",
+                                                                "productTag":  "LOW_GLYCEMIC"
+                                                            }
+                                                        ],
+                                  "BASIC_OPTION":  [
+                                                       {
+                                                           "dishIngredientId":  12,
+                                                           "name":  "ê³ë 1ì",
+                                                           "price":  300,
+                                                           "quantity":  1,
+                                                           "category":  "BASIC_OPTION",
+                                                           "productTag":  "HIGH_PROTEIN"
+                                                       },
+                                                       {
+                                                           "dishIngredientId":  9,
+                                                           "name":  "ì í¸ë° 1ê°",
+                                                           "price":  1200,
+                                                           "quantity":  1,
+                                                           "category":  "BASIC_OPTION",
+                                                           "productTag":  "LOW_GLYCEMIC"
+                                                       },
+                                                       {
+                                                           "dishIngredientId":  8,
+                                                           "name":  "í½ì´ë²ì¯ 1ë´",
+                                                           "price":  1000,
+                                                           "quantity":  1,
+                                                           "category":  "BASIC_OPTION",
+                                                           "productTag":  "LOW_GLYCEMIC"
+                                                       },
+                                                       {
+                                                           "dishIngredientId":  7,
+                                                           "name":  "ìëë¶ 1ë´",
+                                                           "price":  1500,
+                                                           "quantity":  1,
+                                                           "category":  "BASIC_OPTION",
+                                                           "productTag":  "GLUTEN_FREE"
+                                                       },
+                                                       {
+                                                           "dishIngredientId":  10,
+                                                           "name":  "ëí 1ë¿ë¦¬",
+                                                           "price":  1200,
+                                                           "quantity":  1,
+                                                           "category":  "BASIC_OPTION",
+                                                           "productTag":  "LOW_GLYCEMIC"
+                                                       },
+                                                       {
+                                                           "dishIngredientId":  11,
+                                                           "name":  "ìí 1ê°",
+                                                           "price":  1500,
+                                                           "quantity":  1,
+                                                           "category":  "BASIC_OPTION",
+                                                           "productTag":  "LOW_GLYCEMIC"
+                                                       }
+                                                   ]
+                              },
+    "interested":  false
+}
