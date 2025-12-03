@@ -22,7 +22,6 @@
 
 ### **Infra / DevOps**
 - AWS EC2 (Amazon Linux 2023)
-- AWS VPC / Security Group
 - GitHub Actions (CI/CD)
 - Docker & Docker Compose
 - Nginx
