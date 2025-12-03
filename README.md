@@ -61,6 +61,7 @@ MealForYou
     │       ├── data.sql                             # 초기 더미 데이터
     │       └── static
     │           └── index.html                       # 간단 헬스체크용 정적 페이지
+    │           └── images                           # 제품 이미지 폴더
     └── test
         ├── java
         └── resources
