@@ -109,7 +109,7 @@ GitHub Actions + EC2 Self-hosted Runner 기반으로, 코드 push 후 백엔드/
 ## 🤖 Backend(Spring Boot) CI/CD 자동화
 백엔드 레포지토리(MealForYou_BE)의 Workflow는 다음 순서로 작동합니다.
 1. **Trigger**
-   - main 브랜치에 push 또는 PR merge 발생 시 be-deploy.yml 실행
+   - main 브랜치에 push 또는 PR merge 발생 시 백엔드 workflow(be-deploy.yml) 자동 실행
 2. **Build**
     - actions/checkout으로 최신 코드 가져오기
     - JDK 17 설치 (Corretto)
@@ -122,7 +122,7 @@ GitHub Actions + EC2 Self-hosted Runner 기반으로, 코드 push 후 백엔드/
 ## 🖥 Frontend(React) CI/CD 자동화
 프론트 레포지토리(MealForYou_FE)의 Workflow는 다음 순서로 작동합니다.
 1. **Trigger**
-   - main 혹은 dev 브랜치에 push 시 프론트엔드 Workflow 자동 실행
+   - main 혹은 dev 브랜치에 push 시 프론트엔드 workflow(fe-deploy.yml) 자동 실행
 2. **Build**
     - Runner에서 Node.js 설정
     - npm ci로 의존성 설치
