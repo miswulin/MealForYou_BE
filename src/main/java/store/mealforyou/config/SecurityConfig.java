@@ -86,7 +86,7 @@ public class SecurityConfig {
                             res.setContentType("application/json;charset=UTF-8");
                             res.getWriter().write("{\"error\":\"인증이 필요합니다.\"}");
                         })
-                // 403 권한부족 (Access Denied)
+                        // 403 권한부족 (Access Denied)
                         .accessDeniedHandler((req, res, deniedEx) -> {
                             res.setStatus(HttpStatus.FORBIDDEN.value());
                             res.setContentType("application/json;charset=UTF-8");
@@ -118,6 +118,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/refresh").permitAll()
                         .requestMatchers("/api/auth/email/**").permitAll()
                         .requestMatchers("/api/auth/password/reset").permitAll()
+                        .requestMatchers("/images/**").permitAll()     // 정적 이미지들 허용
 
                         // /api/dishes/ 로 시작하는 모든 경로는 인증 없이 허용
                         .requestMatchers("/api/dishes/**").permitAll()
