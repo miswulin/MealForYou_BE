@@ -84,6 +84,15 @@ public class PaymentService {
             orderPlaceDto.setCartItemIds(request.getCartItemIds());
             orderPlaceDto.setPaymentType(request.getPaymentType());
 
+            // 주문 생성 시작 로그
+            log.info("💳 [결제 검증 완료] 주문 생성 시작: memberId={}, cartItemIds={}, paymentType={}",
+                    memberId, request.getCartItemIds(), request.getPaymentType());
+
+            Long orderId = orderService.placeOrder(memberId, orderPlaceDto);
+
+            // 주문 생성 성공 로그
+            log.info("✅ [주문 생성 완료] orderId={}", orderId);
+
             return orderService.placeOrder(memberId, orderPlaceDto);
         } catch (IamportResponseException | IOException e) {
             throw new RuntimeException("포트원 API 연결 중 오류가 발생했습니다. " + e.getMessage());
